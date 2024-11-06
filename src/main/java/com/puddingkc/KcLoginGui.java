@@ -21,6 +21,7 @@ public class KcLoginGui extends JavaPlugin implements Listener {
     private long delayTime;
     private boolean debugMode;
     private boolean isFolia;
+    private boolean closeKick;
     private FileConfiguration config;
 
     @Override
@@ -54,6 +55,7 @@ public class KcLoginGui extends JavaPlugin implements Listener {
         config = getConfig();
         delayTime = config.getLong("delay-time", 45L);
         debugMode = config.getBoolean("debug", false);
+        closeKick = config.getBoolean("close-kick", true);
     }
 
     private boolean isFloodgateEnabled(String plugin) {
@@ -110,7 +112,11 @@ public class KcLoginGui extends JavaPlugin implements Listener {
                 .title(getMessage("login-title"))
                 .input(getMessage("login-password-title"), getMessage("login-password-placeholder"))
                 .validResultHandler(response -> handleLoginResponse(player, response.asInput()))
-                .closedResultHandler(response -> player.kickPlayer(getMessage("close-window")));
+                .closedResultHandler(response -> {
+                    if (closeKick) {
+                        player.kickPlayer(getMessage("close-window"));
+                    }
+                });
     }
 
     private void handleLoginResponse(Player player, String password) {
@@ -130,7 +136,11 @@ public class KcLoginGui extends JavaPlugin implements Listener {
                 .input(getMessage("reg-password-title"), getMessage("reg-password-placeholder"))
                 .input(getMessage("reg-confirmPassword-title"), getMessage("reg-confirmPassword-placeholder"))
                 .validResultHandler(response -> handleRegisterResponse(player, response.asInput(0), response.asInput(1)))
-                .closedResultHandler(response -> player.kickPlayer(getMessage("close-window")));
+                .closedResultHandler(response -> {
+                    if (closeKick) {
+                        player.kickPlayer(getMessage("close-window"));
+                    }
+                });
     }
 
     private void handleRegisterResponse(Player player, String password, String confirmPassword) {

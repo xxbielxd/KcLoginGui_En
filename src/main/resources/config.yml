@@ -15,6 +15,9 @@ messages:
   # General prompts
   close-window: "&cWindow closed, login/registration terminated"
 
+# Whether to kick the player after closing the window
+close-kick: true
+
 # Window send delay, too fast may result in the player not being fully loaded in time. Unit: ticks
 delay-time: 45
 
