@@ -126,9 +126,11 @@ public class KcLoginGui extends JavaPlugin implements Listener {
             authMeApi.forceLogin(player);
             sendDebugLog(player.getName() + " Login successful");
         } else {
-            player.kickPlayer(getMessage("wrong-password"));
+            player.sendMessage(getMessage("wrong-password"));
+            sendFormWithDelay(player, FloodgateApi.getInstance().getPlayer(player.getUniqueId()), getLoginForm(player));
         }
     }
+
 
     private CustomForm.Builder getRegisterForm(Player player) {
         return CustomForm.builder()
@@ -144,19 +146,43 @@ public class KcLoginGui extends JavaPlugin implements Listener {
     }
 
     private void handleRegisterResponse(Player player, String password, String confirmPassword) {
+        AuthMeApi authMeApi = AuthMeApi.getInstance();
+
         if (password == null || confirmPassword == null || password.isEmpty() || confirmPassword.isEmpty()) {
-            player.kickPlayer(getMessage("password-empty"));
+            player.sendMessage(getMessage("password-empty"));
+            sendFormWithDelay(player, FloodgateApi.getInstance().getPlayer(player.getUniqueId()), getRegisterForm(player));
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            player.kickPlayer(getMessage("passwords-not-match"));
+            player.sendMessage(getMessage("passwords-not-match"));
+            sendFormWithDelay(player, FloodgateApi.getInstance().getPlayer(player.getUniqueId()), getRegisterForm(player));
             return;
         }
 
-        AuthMeApi.getInstance().forceRegister(player, password);
+        int minLength = getConfig().getInt("authme-settings.min-password-length", 4);
+        int maxLength = getConfig().getInt("authme-settings.max-password-length", 16);
+
+        if (password.length() < minLength || password.length() > maxLength) {
+            player.sendMessage(
+                getMessage("password-too-short")
+                    .replace("%min%", String.valueOf(minLength))
+                    .replace("%max%", String.valueOf(maxLength))
+            );
+            sendFormWithDelay(player, FloodgateApi.getInstance().getPlayer(player.getUniqueId()), getRegisterForm(player));
+            return;
+        }
+
+        if (!password.matches("[!-~]*")) {
+            player.sendMessage(getMessage("password-invalid-chars"));
+            sendFormWithDelay(player, FloodgateApi.getInstance().getPlayer(player.getUniqueId()), getRegisterForm(player));
+            return;
+        }
+
+        authMeApi.forceRegister(player, password);
         sendDebugLog(player.getName() + " Registration successful");
     }
+
 
     private void sendDebugLog(String message) {
         if (debugMode) {

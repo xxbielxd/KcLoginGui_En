@@ -4,6 +4,7 @@ messages:
   login-password-title: "Password"
   login-password-placeholder: "Please enter your password"
   wrong-password: "&cIncorrect password, please try again"
+
   # Registration window
   reg-title: "Register"
   reg-password-title: "Password"
@@ -12,6 +13,9 @@ messages:
   reg-confirmPassword-placeholder: "Please enter your password again"
   passwords-not-match: "&cPasswords do not match, please try again"
   password-empty: "&cPassword cannot be empty, please try again"
+  password-too-short: "&cPassword must be between %min% and %max% characters."
+  password-invalid-chars: "&cPassword contains invalid characters. Only ASCII printable characters are allowed."
+
   # General prompts
   close-window: "&cWindow closed, login/registration terminated"
 
